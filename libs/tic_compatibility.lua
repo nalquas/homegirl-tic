@@ -65,10 +65,15 @@ function overwriteGfxPaletteAuto(id, r, g, b)
 	gfx.palette(id, r/16, g/16, b/16)
 end
 
+function mouse()
+	x, y, btn = input.mouse()
+	if btn>0 then btn=true else btn=false end
+	return x, y, btn, false, false --TODO Homegirl only has left click right now. Implement later.
+end
+
 function btn(id)
-	--TODO This does not seem to work quite yet. Fix required.
+	--TODO Does not work for multiple players yet.
 	btnmap = input.gamepad(0)
-	text.draw(btnmap,homegirlfont,0,0)
 	if id == 3 then
 		return (btnmap & 1) > 0
 	elseif id == 2 then
@@ -85,7 +90,6 @@ function btn(id)
 		return (btnmap & 64) > 0
 	elseif id == 4 then
 		return (btnmap & 128) > 0
-	
 	end
 	return (btnmap & (2^id)) > 0
 end
