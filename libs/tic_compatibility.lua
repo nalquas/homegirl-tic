@@ -4,10 +4,33 @@
 
 homegirlfont = text.loadfont("sys:/fonts/Victoria.8b.gif")
 homegirltime = 0
+homegirl_lastStep = 0
+homegirl_lastFPSflush = 0
+homegirlfps_accum = 0
+homegirlfps = 0
 
 function startCompatibility()
+	--Initialize screen
 	sys.stepinterval(1000/60) --60fps
 	scrn = view.newscreen(10, 4) --320x180, the closest resolution to TIC-80's 240x136
+	
+	--Load TIC-80 palette (DB16)
+	overwriteGfxPaletteAuto(0, 0x14, 0x0c, 0x1c) --black
+	overwriteGfxPaletteAuto(1, 0x44, 0x24, 0x34) --dark red
+	overwriteGfxPaletteAuto(2, 0x30, 0x34, 0x6d) --dark blue
+	overwriteGfxPaletteAuto(3, 0x4e, 0x4a, 0x4f) --dark gray
+	overwriteGfxPaletteAuto(4, 0x85, 0x4c, 0x30) --brown
+	overwriteGfxPaletteAuto(5, 0x34, 0x65, 0x24) --dark green
+	overwriteGfxPaletteAuto(6, 0xd0, 0x46, 0x48) --red
+	overwriteGfxPaletteAuto(7, 0x75, 0x71, 0x61) --light gray
+	overwriteGfxPaletteAuto(8, 0x59, 0x7d, 0xce) --light blue
+	overwriteGfxPaletteAuto(9, 0xd2, 0x7d, 0x2c) --orange
+	overwriteGfxPaletteAuto(10, 0x85, 0x95, 0xa1) --blue/gray
+	overwriteGfxPaletteAuto(11, 0x6d, 0xaa, 0x2c) --light green
+	overwriteGfxPaletteAuto(12, 0xd2, 0xaa, 0x99) --peach
+	overwriteGfxPaletteAuto(13, 0x6d, 0xc2, 0xca) --cyan
+	overwriteGfxPaletteAuto(14, 0xda, 0xd4, 0x5e) --yellow
+	overwriteGfxPaletteAuto(15, 0xde, 0xee, 0xd6) --white
 end
 
 function _step(t)
@@ -21,17 +44,49 @@ function _step(t)
 	
 	--Compatibility usage notice (to use free space on screen)
 	gfx.fgcolor(15)
-	text.draw("Nalquas' TIC-80 compatibility layer",homegirlfont,2,150)
+	text.draw("Nalquas' TIC-80 compatibility layer\nCurrent FPS: " .. homegirlfps .. "\nSteptime: " .. (t-homegirl_lastStep) .. "ms",homegirlfont,2,150)
 	
 	--Check if we have to exit
 	if input.hotkey() == "\x1b" then
 		sys.exit(0)
 	end
+	
+	homegirlfps_accum = homegirlfps_accum + 1
+	if t-homegirl_lastFPSflush>=1000 then
+		homegirlfps = homegirlfps_accum
+		homegirlfps_accum = 0
+		homegirl_lastFPSflush = t
+	end
+	
+	homegirl_lastStep = t
+end
+
+function overwriteGfxPaletteAuto(id, r, g, b)
+	gfx.palette(id, r/16, g/16, b/16)
 end
 
 function btn(id)
 	--TODO This does not seem to work quite yet. Fix required.
 	btnmap = input.gamepad(0)
+	text.draw(btnmap,homegirlfont,0,0)
+	if id == 3 then
+		return (btnmap & 1) > 0
+	elseif id == 2 then
+		return (btnmap & 2) > 0
+	elseif id == 0 then
+		return (btnmap & 4) > 0
+	elseif id == 1 then
+		return (btnmap & 8) > 0
+	elseif id == 6 then
+		return (btnmap & 16) > 0
+	elseif id == 7 then
+		return (btnmap & 32) > 0
+	elseif id == 5 then
+		return (btnmap & 64) > 0
+	elseif id == 4 then
+		return (btnmap & 128) > 0
+	
+	end
 	return (btnmap & (2^id)) > 0
 end
 
