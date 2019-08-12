@@ -33,11 +33,16 @@ function startCompatibility()
 	overwriteGfxPaletteAuto(15, 0xde, 0xee, 0xd6) --white
 end
 
+function overwriteGfxPaletteAuto(id, r, g, b)
+	gfx.palette(id, r/16, g/16, b/16)
+end
+
 function _step(t)
 	homegirltime = t
 	
 	TIC()
-	--TODO Execute SCN() and OVR()
+	if SCN then SCN() end --TODO Somehow make this work for every individual line. Probably impossible.
+	if OVR then OVR() end
 	
 	rect(0,136,320,44,0) --Bottom black area
 	rect(240,0,240,180,0) --Right black area
@@ -61,53 +66,33 @@ function _step(t)
 	homegirl_lastStep = t
 end
 
-function overwriteGfxPaletteAuto(id, r, g, b)
-	gfx.palette(id, r/16, g/16, b/16)
+function print(txt, x, y, color, fixed, scale, smallfont)
+	x = x or 0
+	y = y or 0
+	color = color or 15
+	fixed = fixed or false
+	scale = scale or 1
+	smallfont = smallfont or false
+	gfx.fgcolor(color)
+	text.draw(txt, homegirlfont, x, y)
+	
+	return 0 --TODO width
 end
 
-function mouse()
-	x, y, btn = input.mouse()
-	if btn>0 then btn=true else btn=false end
-	return x, y, btn, false, false --TODO Homegirl only has left click right now. Implement later.
+function font(text, x, y, colorkey, char_width, char_height, fixed, scale)
+	--TODO
+	return print(text, x, y, 15, fixed, scale, false) --Temporary use: Translate to print in hope that it results in roughly the same result.
 end
 
-function btn(id)
-	--TODO Does not work for multiple players yet.
-	btnmap = input.gamepad(0)
-	if id == 3 then
-		return (btnmap & 1) > 0
-	elseif id == 2 then
-		return (btnmap & 2) > 0
-	elseif id == 0 then
-		return (btnmap & 4) > 0
-	elseif id == 1 then
-		return (btnmap & 8) > 0
-	elseif id == 6 then
-		return (btnmap & 16) > 0
-	elseif id == 7 then
-		return (btnmap & 32) > 0
-	elseif id == 5 then
-		return (btnmap & 64) > 0
-	elseif id == 4 then
-		return (btnmap & 128) > 0
-	end
-	return (btnmap & (2^id)) > 0
+function clip(x, y, w, h)
+	--TODO
+	pass()
 end
 
-function reset()
-	exit() --TODO There is no way to reset in homegirl this easily yet.
-end
-
-function exit()
-	sys.exit(0)
-end
-
-function trace(msg, color)
-	--TODO Print msg to console. Probably not possible while also overriding print()
-end
-
-function time()
-	return homegirltime
+function cls(color)
+	color = color or 0
+	gfx.bgcolor(color)
+	gfx.cls()
 end
 
 function pix(x, y, color)
@@ -166,20 +151,156 @@ function circb(x, y, radius, color)
 	end
 end
 
-function print(txt, x, y, color, fixed, scale, smallfont)
-	x = x or 0
-	y = y or 0
-	color = color or 15
-	fixed = fixed or false
-	scale = scale or 1
-	smallfont = smallfont or false
-	gfx.fgcolor(color)
-	text.draw(txt, homegirlfont, x, y)
-	return width
+function spr(id, x, y, colorkey, scale, flip, rotate, w, h)
+	--TODO
+	pass()
 end
 
-function cls(color)
-	color = color or 0
-	gfx.bgcolor(color)
-	gfx.cls()
+function btn(id)
+	--TODO Does not work for multiple players yet.
+	btnmap = input.gamepad(0)
+	if id == 3 then
+		return (btnmap & 1) > 0
+	elseif id == 2 then
+		return (btnmap & 2) > 0
+	elseif id == 0 then
+		return (btnmap & 4) > 0
+	elseif id == 1 then
+		return (btnmap & 8) > 0
+	elseif id == 6 then
+		return (btnmap & 16) > 0
+	elseif id == 7 then
+		return (btnmap & 32) > 0
+	elseif id == 5 then
+		return (btnmap & 64) > 0
+	elseif id == 4 then
+		return (btnmap & 128) > 0
+	end
+	return (btnmap & (2^id)) > 0
+end
+
+function btnp(id, hold, period)
+	--TODO
+	pass()
+	return false --Pressed just now?
+end
+
+function sfx(id, note, duration, channel, volume, speed)
+	--TODO
+	pass()
+end
+
+function key(code)
+	--TODO
+	pass()
+	return false --Pressed?
+end
+
+function keyp(code, hold, period)
+	--TODO
+	pass()
+	return false --Pressed just now?
+end
+
+function map(x, y, w, h, sx, sy, colorkey, scale, remap)
+	--TODO
+	pass()
+end
+
+function mget(x, y)
+	--TODO
+	pass()
+	return 0 --id
+end
+
+function mset(x, y, id)
+	--TODO
+	pass()
+end
+
+function music(track, frame, row, loop)
+	--TODO
+	pass()
+end
+
+function peek(addr)
+	--TODO
+	pass()
+	return 0 --val
+end
+
+function poke(addr, val)
+	--TODO
+	pass()
+end
+
+function peek4(addr4)
+	--TODO
+	pass()
+	return 0 --val4
+end
+
+function poke4(addr4, val)
+	--TODO
+	pass()
+end
+
+function reset()
+	exit() --TODO There is no way to reset in homegirl this easily yet.
+end
+
+function memcpy(toaddr, fromaddr, length)
+	--TODO
+	pass()
+end
+
+function memset(addr, val, length)
+	--TODO
+	pass()
+end
+
+function pmem(index, val)
+	if val==NIL then
+		return 0 --val
+	else
+		--Save
+	end
+end
+
+function trace(msg, color)
+	--TODO Print msg to console. Probably not possible while also overriding print()
+	pass()
+end
+
+function time()
+	return homegirltime
+end
+
+function mouse()
+	x, y, btn = input.mouse()
+	if btn>0 then btn=true else btn=false end
+	return x, y, btn, false, false --TODO Homegirl only has left click right now. Implement later.
+end
+
+function sync(mask, bank, toCart)
+	--TODO
+	pass()
+end
+
+function tri(x1, y1, x2, y2, x3, y3, color)
+	--TODO
+	pass()
+end
+
+function textri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3, use_map, colorkey)
+	--TODO This is so far away that it will probably never be implemented. Still putting it here so the code at least runs, even if textri() doesn't do anything
+	pass()
+end
+
+function exit()
+	sys.exit(0)
+end
+
+function pass()
+	print("Called unimplemented function")
 end
