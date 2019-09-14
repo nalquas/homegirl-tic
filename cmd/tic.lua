@@ -1,33 +1,34 @@
 
---Nalquas' TIC-80 compatibility layer (2019-09-14)
---Highly incomplete, but interesting nonetheless.
---Can only load .lua scripts at this point.
---Should you wish to run a program saved in a .tic file,
---you'll have to extract the script out of it and put it in a .lua file.
---Keep in mind that textures and sound cannot be used yet.
+-- Nalquas' TIC-80 compatibility layer (2019-09-14)
+-- https://github.com/nalquas/homegirl-tic
+-- Highly incomplete, but interesting nonetheless.
+-- Can only load .lua scripts at this point.
+-- Should you wish to run a program saved in a .tic file,
+-- you'll have to extract the script out of it and put it in a .lua file.
+-- Keep in mind that textures and sound cannot be used yet.
 
 
---MIT License
+-- MIT License
 --
---Copyright (c) 2019 Nalquas
+-- Copyright (c) 2019 Nalquas
 --
---Permission is hereby granted, free of charge, to any person obtaining a copy
---of this software and associated documentation files (the "Software"), to deal
---in the Software without restriction, including without limitation the rights
---to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
---copies of the Software, and to permit persons to whom the Software is
---furnished to do so, subject to the following conditions:
+-- Permission is hereby granted, free of charge, to any person obtaining a copy
+-- of this software and associated documentation files (the "Software"), to deal
+-- in the Software without restriction, including without limitation the rights
+-- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+-- copies of the Software, and to permit persons to whom the Software is
+-- furnished to do so, subject to the following conditions:
 --
---The above copyright notice and this permission notice shall be included in all
---copies or substantial portions of the Software.
+-- The above copyright notice and this permission notice shall be included in all
+-- copies or substantial portions of the Software.
 --
---THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
---IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
---FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
---AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
---LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
---OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
---SOFTWARE.
+-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+-- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+-- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+-- SOFTWARE.
 
 
 drive_sys = _DRIVE
