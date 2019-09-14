@@ -5,6 +5,7 @@
 function _init(args)
 	if #args==1 then
 		require("sys:libs/tic_compatibility")
+		args[1] = string.gsub(args[1], ".lua", "") --Replace any ".lua" mentions in target parameter. require() doesn't work with them.
 		require(args[1])
 		startCompatibility()
 	else
