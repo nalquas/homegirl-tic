@@ -301,12 +301,12 @@ function sync(mask, bank, toCart)
 end
 
 function tri(x1, y1, x2, y2, x3, y3, color)
-	--TODO
-	pass()
+	gfx.fgcolor(color)
+	gfx.tri(x1, y1, x2, y2, x3, y3)
 end
 
 function textri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3, use_map, colorkey)
-	--TODO This is so far away that it will probably never be implemented. Still putting it here so the code at least runs, even if textri() doesn't do anything
+	--TODO This is so far away from my knowledge that it will probably never be implemented. Still putting it here so the code at least runs, even if textri() doesn't do anything
 	pass()
 end
 
