@@ -15,9 +15,6 @@ homegirlfps = 0
 function _init(args)
 	homegirlprint(args)
 	if #args==1 then
-		args[1] = string.gsub(args[1], ".lua", "") --Replace any ".lua" mentions in target parameter. require() doesn't work with them.
-		require(args[1])
-		
 		--Initialize screen
 		sys.stepinterval(1000/60) --60fps
 		scrn = view.newscreen(10, 4) --320x180, the closest resolution to TIC-80's 240x136
@@ -39,6 +36,8 @@ function _init(args)
 		overwriteGfxPaletteAuto(13, 0x6d, 0xc2, 0xca) --cyan
 		overwriteGfxPaletteAuto(14, 0xda, 0xd4, 0x5e) --yellow
 		overwriteGfxPaletteAuto(15, 0xde, 0xee, 0xd6) --white
+		
+		loadfile(args[1])()
 	else
 		homegirlprint("Invalid usage. Correct usage: tic [filename]")
 		sys.exit(0)
