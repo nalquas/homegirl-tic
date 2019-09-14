@@ -1,8 +1,9 @@
 
---Nalquas' TIC-80 compatibility layer (2019-08-04)
+--Nalquas' TIC-80 compatibility layer (2019-09-14)
 --Highly incomplete, but interesting nonetheless.
 
 homegirlfont = text.loadfont("sys:/fonts/Victoria.8b.gif")
+homegirlprint = print --Rename homegirl's print in order to not interfere with TIC-80's print
 homegirltime = 0
 homegirl_lastStep = 0
 homegirl_lastFPSflush = 0
@@ -140,8 +141,8 @@ end
 
 function circb(x, y, radius, color)
 	gfx.fgcolor(color)
-	x_last = x
-	y_last = y
+	local x_last = x
+	local y_last = y
 	for i=0,360 do
 		x_now = x+radius*math.cos(math.rad(i))
 		y_now = y+radius*math.sin(math.rad(i))
@@ -158,7 +159,7 @@ end
 
 function btn(id)
 	--TODO Does not work for multiple players yet.
-	btnmap = input.gamepad(0)
+	local btnmap = input.gamepad(0)
 	if id == 3 then
 		return (btnmap & 1) > 0
 	elseif id == 2 then
@@ -263,13 +264,12 @@ function pmem(index, val)
 	if val==NIL then
 		return 0 --val
 	else
-		--Save
+		--TODO Save
 	end
 end
 
 function trace(msg, color)
-	--TODO Print msg to console. Probably not possible while also overriding print()
-	pass()
+	homegirlprint(tostring(msg))
 end
 
 function time()
@@ -277,9 +277,11 @@ function time()
 end
 
 function mouse()
-	x, y, btn = input.mouse()
-	if btn>0 then btn=true else btn=false end
-	return x, y, btn, false, false --TODO Homegirl only has left click right now. Implement later.
+	local x, y, btn = input.mouse()
+	local left = btn&1 > 0
+	local middle = btn&2 > 0
+	local right = btn&3 > 0
+	return x, y, left, middle, right
 end
 
 function sync(mask, bank, toCart)
