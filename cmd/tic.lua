@@ -1,10 +1,15 @@
 
 --Nalquas' TIC-80 compatibility layer (2019-09-14)
 --Highly incomplete, but interesting nonetheless.
+--Can only load .lua scripts at this point.
+--Should you wish to run a program saved in a .tic file,
+--you'll have to extract the script out of it and put it in a .lua file.
+--Keep in mind that textures and sound cannot be used yet.
 
 drive_sys = _DRIVE
 if drive_sys == "USER:" then drive_sys="SYS:" end
 homegirlfont = text.loadfont(drive_sys .. "fonts/Victoria.8b.gif")
+
 homegirlprint = print --Rename homegirl's print in order to not interfere with TIC-80's print
 homegirltime = 0
 homegirl_lastStep = 0
@@ -136,24 +141,24 @@ function circ(x, y, radius, color)
 	--TODO Find an efficient and accurate way to fill a circle (Bresenham's algorithm?)
 	
 	--Inefficient, but accurate approach
-	--for i=radius,0,-1 do
-	--	circb(x, y, i, color)
-	--end
+	for i=radius,0,-1 do
+		circb(x, y, i, color)
+	end
 	
 	--Inaccurate, but relatively fast approach
-	gfx.fgcolor(color)
-	for i=0,359 do
-		x_now = x+radius*math.cos(math.rad(i))
-		y_now = y+radius*math.sin(math.rad(i))
-		gfx.line(x,y,x_now,y_now)
-	end
+	--gfx.fgcolor(color)
+	--for i=0,359 do
+	--	x_now = x+radius*math.cos(math.rad(i))
+	--	y_now = y+radius*math.sin(math.rad(i))
+	--	gfx.line(x,y,x_now,y_now)
+	--end
 end
 
 function circb(x, y, radius, color)
 	gfx.fgcolor(color)
 	local x_last = x
 	local y_last = y
-	for i=0,360 do
+	for i=0,360,2 do --Only check every second degree to improve performance
 		x_now = x+radius*math.cos(math.rad(i))
 		y_now = y+radius*math.sin(math.rad(i))
 		if i>0 then gfx.line(x_last,y_last,x_now,y_now) end
@@ -191,9 +196,9 @@ function btn(id)
 end
 
 function btnp(id, hold, period)
-	--TODO
+	--TODO Not implemented yet. For now, we'll just pass btn() through.
 	pass()
-	return false --Pressed just now?
+	return btn(id) --Pressed just now?
 end
 
 function sfx(id, note, duration, channel, volume, speed)
