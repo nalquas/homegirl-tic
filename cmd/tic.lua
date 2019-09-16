@@ -1,5 +1,5 @@
 
--- Nalquas' TIC-80 compatibility layer (2019-09-14)
+-- Nalquas' TIC-80 compatibility layer (2019-09-16)
 -- https://github.com/nalquas/homegirl-tic
 -- Highly incomplete, but interesting nonetheless.
 -- Can only load .lua scripts at this point.
@@ -31,9 +31,7 @@
 -- SOFTWARE.
 
 
-drive_sys = _DRIVE
-if drive_sys == "USER:" then drive_sys="SYS:" end
-homegirlfont = text.loadfont(drive_sys .. "fonts/Victoria.8b.gif")
+homegirlfont = text.loadfont("Victoria.8b.gif")
 
 homegirlprint = print --Rename homegirl's print in order to not interfere with TIC-80's print
 homegirltime = 0
