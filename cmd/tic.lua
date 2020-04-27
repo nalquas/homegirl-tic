@@ -250,6 +250,7 @@ end
 
 function btnp(id, hold, period)
 	--TODO Does not work for multiple players yet.
+	--TODO hold and period still need to be implemented
 	if id == 3 then
 		return (homegirl_buttonmap & 1) > 0 and not ((homegirl_buttonmap_last & 1) > 0)
 	elseif id == 2 then
