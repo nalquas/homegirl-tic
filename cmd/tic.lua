@@ -294,7 +294,7 @@ function keyp(code, hold, period)
 end
 
 function map(x, y, w, h, sx, sy, colorkey, scale, remap)
-	--TODO sx, sy, colorkey, scale and remap
+	--TODO colorkey, scale and remap
 	x = x or 0
 	y = y or 0
 	w = w or 30
@@ -307,7 +307,7 @@ function map(x, y, w, h, sx, sy, colorkey, scale, remap)
 
 	for drawy = 0, h do
 		for drawx = 0, w do
-			spr(mget(x + drawx, y + drawy), drawx * 8, drawy * 8)
+			spr(mget(x + drawx, y + drawy), sx+(drawx * 8), sy+(drawy * 8))
 		end
 	end
 end
