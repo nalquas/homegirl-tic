@@ -135,13 +135,13 @@ function print(txt, x, y, color, fixed, scale, smallfont)
 	smallfont = smallfont or false
 	
 	-- Select correct font
-	font_to_use = font_big
+	local font_to_use = font_big
 	if smallfont then
 		font_to_use = font_small
 	end
 	
 	gfx.fgcolor(color)
-	width, height = text.draw(txt, font_to_use, x, y)
+	local width, height = text.draw(txt, font_to_use, x, y)
 	
 	return width
 end
@@ -192,20 +192,17 @@ function rectb(x, y, w, h, color)
 end
 
 function circ(x, y, radius, color)
-	--TODO Find an efficient and accurate way to fill a circle (Bresenham's algorithm?)
-	
-	--Inefficient, but accurate approach
-	for i=radius,0,-1 do
-		circb(x, y, i, color)
+	-- Use triangles to approximate a circle
+	gfx.fgcolor(color)
+	local x_now = x+radius*math.cos(math.rad(358))
+	local y_now = y+radius*math.sin(math.rad(358))
+	for i=0,358,2 do --Only check every second degree to improve performance
+		x_last = x_now
+		y_last = y_now
+		x_now = x+radius*math.cos(math.rad(i))
+		y_now = y+radius*math.sin(math.rad(i))
+		gfx.tri(x, y, x_last, y_last, x_now, y_now)
 	end
-	
-	--Inaccurate, but relatively fast approach
-	--gfx.fgcolor(color)
-	--for i=0,359 do
-	--	x_now = x+radius*math.cos(math.rad(i))
-	--	y_now = y+radius*math.sin(math.rad(i))
-	--	gfx.line(x,y,x_now,y_now)
-	--end
 end
 
 function circb(x, y, radius, color)
