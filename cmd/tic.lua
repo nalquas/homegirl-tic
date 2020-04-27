@@ -32,6 +32,8 @@
 
 
 homegirlfont = text.loadfont("Victoria.8b.gif")
+font_big = text.loadfont("tic_big.8b.gif")
+font_small = text.loadfont("ruthenia_c.8.gif")
 
 homegirlprint = print --Rename homegirl's print in order to not interfere with TIC-80's print
 homegirltime = 0
@@ -112,10 +114,17 @@ function print(txt, x, y, color, fixed, scale, smallfont)
 	fixed = fixed or false
 	scale = scale or 1
 	smallfont = smallfont or false
-	gfx.fgcolor(color)
-	text.draw(txt, homegirlfont, x, y)
 	
-	return 0 --TODO width
+	-- Select correct font
+	font_to_use = font_big
+	if smallfont then
+		font_to_use = font_small
+	end
+	
+	gfx.fgcolor(color)
+	width, height = text.draw(txt, font_to_use, x, y)
+	
+	return width
 end
 
 function font(text, x, y, colorkey, char_width, char_height, fixed, scale)
@@ -338,7 +347,7 @@ function textri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3, use_map, colorke
 	tri(x1, y1, x2, y2, x3, y3, 14)
 end
 
-function exit()
+function exit()-- Exit to cli
 	sys.exit(0)
 end
 
