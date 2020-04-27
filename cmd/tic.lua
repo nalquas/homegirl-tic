@@ -1,5 +1,5 @@
 
--- Nalquas' TIC-80 compatibility layer (2020-04-27)
+-- Nalquas' TIC-80 compatibility layer
 -- https://github.com/nalquas/homegirl-tic
 -- Highly incomplete, but interesting nonetheless.
 -- Can only load .lua scripts at this point.
@@ -41,6 +41,7 @@ homegirl_lastStep = 0
 homegirl_lastFPSflush = 0
 homegirlfps_accum = 0
 homegirlfps = 0
+homegirl_clip_area = {x=0, y=0, w=240, h=136}
 
 function _init(args)
 	homegirlprint(args)
@@ -85,6 +86,13 @@ function _step(t)
 	if SCN then SCN() end --TODO Somehow make this work for every individual line. Probably impossible.
 	if OVR then OVR() end
 	
+	-- Handle clip()
+	rect(0, 0, homegirl_clip_area.x, 180, 0) -- Left
+	rect(homegirl_clip_area.x, 0, homegirl_clip_area.w, homegirl_clip_area.y, 0) -- Top
+	rect(homegirl_clip_area.x+homegirl_clip_area.w, 0, 320-(homegirl_clip_area.x+homegirl_clip_area.w), 180, 0) -- Right
+	rect(homegirl_clip_area.x, homegirl_clip_area.y+homegirl_clip_area.h, homegirl_clip_area.w, 180-(homegirl_clip_area.y+homegirl_clip_area.h), 0) -- Bottom
+	
+	-- Clip the view so that the 240x136 viewport of TIC-80 is enforced
 	rect(0,136,320,44,0) --Bottom black area
 	rect(240,0,240,180,0) --Right black area
 	
@@ -133,8 +141,11 @@ function font(text, x, y, colorkey, char_width, char_height, fixed, scale)
 end
 
 function clip(x, y, w, h)
-	--TODO
-	pass()
+	if x==NIL or y==NIL or w==NIL or h==NIL then
+		homegirl_clip_area = {x=0, y=0, w=240, h=136}
+	else
+		homegirl_clip_area = {x=x, y=y, w=w, h=h}
+	end
 end
 
 function cls(color)
