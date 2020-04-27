@@ -1,5 +1,5 @@
 
--- Nalquas' TIC-80 compatibility layer (2019-09-16)
+-- Nalquas' TIC-80 compatibility layer (2020-04-27)
 -- https://github.com/nalquas/homegirl-tic
 -- Highly incomplete, but interesting nonetheless.
 -- Can only load .lua scripts at this point.
@@ -10,7 +10,7 @@
 
 -- MIT License
 --
--- Copyright (c) 2019 Nalquas
+-- Copyright (c) 2019-2020 Nalquas
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -347,7 +347,7 @@ function textri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3, use_map, colorke
 	tri(x1, y1, x2, y2, x3, y3, 14)
 end
 
-function exit()-- Exit to cli
+function exit() -- Exit to cli
 	sys.exit(0)
 end
 
