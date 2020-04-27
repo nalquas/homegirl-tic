@@ -41,7 +41,9 @@ homegirl_lastStep = 0
 homegirl_lastFPSflush = 0
 homegirlfps_accum = 0
 homegirlfps = 0
-homegirl_clip_area = {x=0, y=0, w=240, h=136}
+homegirl_clip_area = NIL
+homegirl_buttonmap = NIL
+homegirl_buttonmap_last = NIL
 
 function _init(args)
 	homegirlprint(args)
@@ -68,6 +70,10 @@ function _init(args)
 		overwriteGfxPaletteAuto(14, 0xda, 0xd4, 0x5e) --yellow
 		overwriteGfxPaletteAuto(15, 0xde, 0xee, 0xd6) --white
 		
+		-- Call some initial methods to setup stuff
+		clip()
+		
+		-- Load file
 		loadfile(args[1])()
 	else
 		homegirlprint("Invalid usage. Correct usage: tic [filename]")
@@ -82,6 +88,11 @@ end
 function _step(t)
 	homegirltime = t
 	
+	-- Refresh buttonmap
+	homegirl_buttonmap_last = homegirl_buttonmap
+	homegirl_buttonmap = input.gamepad(0) -- TODO Does not work for multiple players yet.
+	
+	-- Call tic functions
 	TIC()
 	if SCN then SCN() end --TODO Somehow make this work for every individual line. Probably impossible.
 	if OVR then OVR() end
@@ -217,31 +228,46 @@ end
 
 function btn(id)
 	--TODO Does not work for multiple players yet.
-	local btnmap = input.gamepad(0)
 	if id == 3 then
-		return (btnmap & 1) > 0
+		return (homegirl_buttonmap & 1) > 0
 	elseif id == 2 then
-		return (btnmap & 2) > 0
+		return (homegirl_buttonmap & 2) > 0
 	elseif id == 0 then
-		return (btnmap & 4) > 0
+		return (homegirl_buttonmap & 4) > 0
 	elseif id == 1 then
-		return (btnmap & 8) > 0
+		return (homegirl_buttonmap & 8) > 0
 	elseif id == 6 then
-		return (btnmap & 16) > 0
+		return (homegirl_buttonmap & 16) > 0
 	elseif id == 7 then
-		return (btnmap & 32) > 0
+		return (homegirl_buttonmap & 32) > 0
 	elseif id == 5 then
-		return (btnmap & 64) > 0
+		return (homegirl_buttonmap & 64) > 0
 	elseif id == 4 then
-		return (btnmap & 128) > 0
+		return (homegirl_buttonmap & 128) > 0
 	end
-	return (btnmap & (2^id)) > 0
+	return (homegirl_buttonmap & (2^id)) > 0
 end
 
 function btnp(id, hold, period)
-	--TODO Not implemented yet. For now, we'll just pass btn() through.
-	pass()
-	return btn(id) --Pressed just now?
+	--TODO Does not work for multiple players yet.
+	if id == 3 then
+		return (homegirl_buttonmap & 1) > 0 and not ((homegirl_buttonmap_last & 1) > 0)
+	elseif id == 2 then
+		return (homegirl_buttonmap & 2) > 0 and not ((homegirl_buttonmap_last & 2) > 0)
+	elseif id == 0 then
+		return (homegirl_buttonmap & 4) > 0 and not ((homegirl_buttonmap_last & 4) > 0)
+	elseif id == 1 then
+		return (homegirl_buttonmap & 8) > 0 and not ((homegirl_buttonmap_last & 8) > 0)
+	elseif id == 6 then
+		return (homegirl_buttonmap & 16) > 0 and not ((homegirl_buttonmap_last & 16) > 0)
+	elseif id == 7 then
+		return (homegirl_buttonmap & 32) > 0 and not ((homegirl_buttonmap_last & 32) > 0)
+	elseif id == 5 then
+		return (homegirl_buttonmap & 64) > 0 and not ((homegirl_buttonmap_last & 64) > 0)
+	elseif id == 4 then
+		return (homegirl_buttonmap & 128) > 0 and not ((homegirl_buttonmap_last & 128) > 0)
+	end
+	return (homegirl_buttonmap & (2^id)) > 0 and not ((homegirl_buttonmap_last & (2^id)) > 0)
 end
 
 function sfx(id, note, duration, channel, volume, speed)
