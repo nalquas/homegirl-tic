@@ -1,5 +1,5 @@
 
--- Nalquas' TIC-80 compatibility layer (2020-04-27)
+-- Nalquas' TIC-80 compatibility layer
 -- https://github.com/nalquas/homegirl-tic
 -- Highly incomplete, but interesting nonetheless.
 -- Can only load Lua scripts, sprites and maps at this point.
@@ -41,6 +41,11 @@ homegirl_lastStep = 0
 homegirl_lastFPSflush = 0
 homegirlfps_accum = 0
 homegirlfps = 0
+homegirl_clip_area = NIL
+homegirl_buttonmap = NIL
+homegirl_buttonmap_last = NIL
+homegirl_spritesheet = NIL
+homegirl_mapdata = NIL
 
 function _init(args)
 	homegirlprint(args)
@@ -67,9 +72,13 @@ function _init(args)
 		overwriteGfxPaletteAuto(14, 0xda, 0xd4, 0x5e) --yellow
 		overwriteGfxPaletteAuto(15, 0xde, 0xee, 0xd6) --white
 		
+		-- Call some initial methods to setup stuff
+		clip()
+		
+		-- Load file
 		loadfile(args[1] .. "/code.lua")()
-		spritesheet = image.load(args[1] .. "/sprites.gif")
-		mapdata = fs.read(args[1] .. "/world.map")
+		homegirl_spritesheet = image.load(args[1] .. "/sprites.gif")
+		homegirl_mapdata = fs.read(args[1] .. "/world.map")
 	else
 		homegirlprint("Invalid usage. Correct usage: tic [folder]")
 		sys.exit(0)
@@ -83,10 +92,22 @@ end
 function _step(t)
 	homegirltime = t
 	
+	-- Refresh buttonmap
+	homegirl_buttonmap_last = homegirl_buttonmap
+	homegirl_buttonmap = input.gamepad(0) -- TODO Does not work for multiple players yet.
+	
+	-- Call tic functions
 	TIC()
 	if SCN then SCN(0) end --TODO Somehow make this work for every individual line. Probably impossible.
 	if OVR then OVR() end
 	
+	-- Handle clip()
+	rect(0, 0, homegirl_clip_area.x, 180, 0) -- Left
+	rect(homegirl_clip_area.x, 0, homegirl_clip_area.w, homegirl_clip_area.y, 0) -- Top
+	rect(homegirl_clip_area.x+homegirl_clip_area.w, 0, 320-(homegirl_clip_area.x+homegirl_clip_area.w), 180, 0) -- Right
+	rect(homegirl_clip_area.x, homegirl_clip_area.y+homegirl_clip_area.h, homegirl_clip_area.w, 180-(homegirl_clip_area.y+homegirl_clip_area.h), 0) -- Bottom
+	
+	-- Clip the view so that the 240x136 viewport of TIC-80 is enforced
 	rect(0,136,320,44,0) --Bottom black area
 	rect(240,0,240,180,0) --Right black area
 	
@@ -118,13 +139,13 @@ function print(txt, x, y, color, fixed, scale, smallfont)
 	smallfont = smallfont or false
 	
 	-- Select correct font
-	font_to_use = font_big
+	local font_to_use = font_big
 	if smallfont then
 		font_to_use = font_small
 	end
 	
 	gfx.fgcolor(color)
-	width, height = text.draw(txt, font_to_use, x, y)
+	local width, height = text.draw(txt, font_to_use, x, y)
 	
 	return width
 end
@@ -135,8 +156,11 @@ function font(text, x, y, colorkey, char_width, char_height, fixed, scale)
 end
 
 function clip(x, y, w, h)
-	--TODO
-	pass()
+	if x==NIL or y==NIL or w==NIL or h==NIL then
+		homegirl_clip_area = {x=0, y=0, w=240, h=136}
+	else
+		homegirl_clip_area = {x=x, y=y, w=w, h=h}
+	end
 end
 
 function cls(color)
@@ -172,20 +196,17 @@ function rectb(x, y, w, h, color)
 end
 
 function circ(x, y, radius, color)
-	--TODO Find an efficient and accurate way to fill a circle (Bresenham's algorithm?)
-	
-	--Inefficient, but accurate approach
-	for i=radius,0,-1 do
-		circb(x, y, i, color)
+	-- Use triangles to approximate a circle
+	gfx.fgcolor(color)
+	local x_now = x+radius*math.cos(math.rad(358))
+	local y_now = y+radius*math.sin(math.rad(358))
+	for i=0,358,2 do --Only check every second degree to improve performance
+		x_last = x_now
+		y_last = y_now
+		x_now = x+radius*math.cos(math.rad(i))
+		y_now = y+radius*math.sin(math.rad(i))
+		gfx.tri(x, y, x_last, y_last, x_now, y_now)
 	end
-	
-	--Inaccurate, but relatively fast approach
-	--gfx.fgcolor(color)
-	--for i=0,359 do
-	--	x_now = x+radius*math.cos(math.rad(i))
-	--	y_now = y+radius*math.sin(math.rad(i))
-	--	gfx.line(x,y,x_now,y_now)
-	--end
 end
 
 function circb(x, y, radius, color)
@@ -207,36 +228,52 @@ function spr(id, x, y, colorkey, scale, flip, rotate, w, h)
 	w = w or 1
 	h = h or 1
 	if type(id) ~= "number" then id = 0 end
-	image.draw(spritesheet[1], x, y, (id % 16) * 8, (id // 16) * 8, scale * (w * 8), scale * (h * 8), w * 8, h * 8)
+	image.draw(homegirl_spritesheet[1], x, y, (id % 16) * 8, (id // 16) * 8, scale * (w * 8), scale * (h * 8), w * 8, h * 8)
 end
 
 function btn(id)
 	--TODO Does not work for multiple players yet.
-	local btnmap = input.gamepad(0)
 	if id == 3 then
-		return (btnmap & 1) > 0
+		return (homegirl_buttonmap & 1) > 0
 	elseif id == 2 then
-		return (btnmap & 2) > 0
+		return (homegirl_buttonmap & 2) > 0
 	elseif id == 0 then
-		return (btnmap & 4) > 0
+		return (homegirl_buttonmap & 4) > 0
 	elseif id == 1 then
-		return (btnmap & 8) > 0
+		return (homegirl_buttonmap & 8) > 0
 	elseif id == 6 then
-		return (btnmap & 16) > 0
+		return (homegirl_buttonmap & 16) > 0
 	elseif id == 7 then
-		return (btnmap & 32) > 0
+		return (homegirl_buttonmap & 32) > 0
 	elseif id == 5 then
-		return (btnmap & 64) > 0
+		return (homegirl_buttonmap & 64) > 0
 	elseif id == 4 then
-		return (btnmap & 128) > 0
+		return (homegirl_buttonmap & 128) > 0
 	end
-	return (btnmap & (2^id)) > 0
+	return (homegirl_buttonmap & (2^id)) > 0
 end
 
 function btnp(id, hold, period)
-	--TODO Not implemented yet. For now, we'll just pass btn() through.
-	pass()
-	return btn(id) --Pressed just now?
+	--TODO Does not work for multiple players yet.
+	--TODO hold and period still need to be implemented
+	if id == 3 then
+		return (homegirl_buttonmap & 1) > 0 and not ((homegirl_buttonmap_last & 1) > 0)
+	elseif id == 2 then
+		return (homegirl_buttonmap & 2) > 0 and not ((homegirl_buttonmap_last & 2) > 0)
+	elseif id == 0 then
+		return (homegirl_buttonmap & 4) > 0 and not ((homegirl_buttonmap_last & 4) > 0)
+	elseif id == 1 then
+		return (homegirl_buttonmap & 8) > 0 and not ((homegirl_buttonmap_last & 8) > 0)
+	elseif id == 6 then
+		return (homegirl_buttonmap & 16) > 0 and not ((homegirl_buttonmap_last & 16) > 0)
+	elseif id == 7 then
+		return (homegirl_buttonmap & 32) > 0 and not ((homegirl_buttonmap_last & 32) > 0)
+	elseif id == 5 then
+		return (homegirl_buttonmap & 64) > 0 and not ((homegirl_buttonmap_last & 64) > 0)
+	elseif id == 4 then
+		return (homegirl_buttonmap & 128) > 0 and not ((homegirl_buttonmap_last & 128) > 0)
+	end
+	return (homegirl_buttonmap & (2^id)) > 0 and not ((homegirl_buttonmap_last & (2^id)) > 0)
 end
 
 function sfx(id, note, duration, channel, volume, speed)
@@ -277,7 +314,7 @@ end
 
 function mget(x, y)
 	local id = 240 * (y % 136) + (x % 240)
-	return string.byte(mapdata, math.tointeger(id + 1)) --id
+	return string.byte(homegirl_mapdata, math.tointeger(id + 1)) --id
 end
 
 function mset(x, y, id)
