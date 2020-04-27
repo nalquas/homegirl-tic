@@ -2,10 +2,10 @@
 -- Nalquas' TIC-80 compatibility layer
 -- https://github.com/nalquas/homegirl-tic
 -- Highly incomplete, but interesting nonetheless.
--- Can only load .lua scripts at this point.
+-- Can only load Lua scripts, sprites and maps at this point.
 -- Should you wish to run a program saved in a .tic file,
--- you'll have to extract the script out of it and put it in a .lua file.
--- Keep in mind that textures and sound cannot be used yet.
+-- you'll have to extract the data out of it and put it inside a folder.
+-- Keep in mind that sound cannot be used yet.
 
 
 -- MIT License
@@ -44,6 +44,8 @@ homegirlfps = 0
 homegirl_clip_area = NIL
 homegirl_buttonmap = NIL
 homegirl_buttonmap_last = NIL
+homegirl_spritesheet = NIL
+homegirl_mapdata = NIL
 
 function _init(args)
 	homegirlprint(args)
@@ -74,9 +76,11 @@ function _init(args)
 		clip()
 		
 		-- Load file
-		loadfile(args[1])()
+		loadfile(args[1] .. "/code.lua")()
+		homegirl_spritesheet = image.load(args[1] .. "/sprites.gif")
+		homegirl_mapdata = fs.read(args[1] .. "/world.map")
 	else
-		homegirlprint("Invalid usage. Correct usage: tic [filename]")
+		homegirlprint("Invalid usage. Correct usage: tic [folder]")
 		sys.exit(0)
 	end
 end
@@ -94,7 +98,7 @@ function _step(t)
 	
 	-- Call tic functions
 	TIC()
-	if SCN then SCN() end --TODO Somehow make this work for every individual line. Probably impossible.
+	if SCN then SCN(0) end --TODO Somehow make this work for every individual line. Probably impossible.
 	if OVR then OVR() end
 	
 	-- Handle clip()
@@ -219,8 +223,12 @@ function circb(x, y, radius, color)
 end
 
 function spr(id, x, y, colorkey, scale, flip, rotate, w, h)
-	--TODO
-	pass()
+	--TODO colorkey, flip and rotate
+	scale = scale or 1
+	w = w or 1
+	h = h or 1
+	if type(id) ~= "number" then id = 0 end
+	image.draw(homegirl_spritesheet[1], x, y, (id % 16) * 8, (id // 16) * 8, scale * (w * 8), scale * (h * 8), w * 8, h * 8)
 end
 
 function btn(id)
@@ -286,14 +294,27 @@ function keyp(code, hold, period)
 end
 
 function map(x, y, w, h, sx, sy, colorkey, scale, remap)
-	--TODO
-	pass()
+	--TODO sx, sy, colorkey, scale and remap
+	x = x or 0
+	y = y or 0
+	w = w or 30
+	h = h or 17
+	sx = sx or 0
+	sy = sy or 0
+	colorkey = colorkey or -1
+	scale = scale or 1
+	remap = remap or nil
+
+	for drawy = 0, h do
+		for drawx = 0, w do
+			spr(mget(x + drawx, y + drawy), drawx * 8, drawy * 8)
+		end
+	end
 end
 
 function mget(x, y)
-	--TODO
-	pass()
-	return 0 --id
+	local id = 240 * (y % 136) + (x % 240)
+	return string.byte(homegirl_mapdata, math.tointeger(id + 1)) --id
 end
 
 function mset(x, y, id)
