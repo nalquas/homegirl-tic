@@ -250,11 +250,22 @@ function circb(x, y, radius, color)
 end
 
 function spr(id, x, y, colorkey, scale, flip, rotate, w, h)
-	--TODO colorkey, flip and rotate
+	--TODO flip and rotate
+	colorkey = colorkey or -1
 	scale = scale or 1
+	flip = flip or 0
+	rotate = rotate or 0
 	w = w or 1
 	h = h or 1
+	
 	if type(id) ~= "number" then id = 0 end
+	
+	-- Handle transparency (colorkey)
+	if colorkey >= 0 and colorkey <= 15 then
+		image.bgcolor(homegirl_spritesheet[1], colorkey)
+		image.copymode(3, true)
+	end
+	
 	image.draw(homegirl_spritesheet[1], x, y, (id % 16) * 8, (id // 16) * 8, scale * (w * 8), scale * (h * 8), w * 8, h * 8)
 end
 
@@ -321,7 +332,7 @@ function keyp(code, hold, period)
 end
 
 function map(x, y, w, h, sx, sy, colorkey, scale, remap)
-	--TODO colorkey, scale and remap
+	--TODO scale and remap
 	x = x or 0
 	y = y or 0
 	w = w or 30
@@ -331,6 +342,12 @@ function map(x, y, w, h, sx, sy, colorkey, scale, remap)
 	colorkey = colorkey or -1
 	scale = scale or 1
 	remap = remap or nil
+	
+	-- Handle transparency (colorkey)
+	if colorkey >= 0 and colorkey <= 15 then
+		image.bgcolor(homegirl_spritesheet[1], colorkey)
+		image.copymode(3, true)
+	end
 
 	for drawy = 0, h do
 		for drawx = 0, w do
