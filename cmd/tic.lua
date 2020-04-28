@@ -92,8 +92,8 @@ function _init(args)
 		elseif fs.isfile("user:tic_defaults/sprites.gif") then
 			homegirl_spritesheet = image.load("user:tic_defaults/sprites.gif")
 		else
-			homegirlprint("No sprites.gif given, no default sprites.gif in user:tic_defaults. Quitting...")
-			sys.exit(0)
+			homegirlprint("No sprites.gif given, no default sprites.gif in user:tic_defaults. Generating empty spritesheet instead...")
+			homegirl_spritesheet = image.new(128, 256, 8)
 		end
 		
 		if fs.isfile(folderpath .. "world.map") then
@@ -101,8 +101,8 @@ function _init(args)
 		elseif fs.isfile("user:tic_defaults/world.map") then
 			homegirl_mapdata = fs.read("user:tic_defaults/world.map")
 		else
-			homegirlprint("No world.map given, no default world.map in user:tic_defaults. Quitting...")
-			sys.exit(0)
+			homegirlprint("No world.map given, no default world.map in user:tic_defaults. Generating empty map instead...")
+			homegirl_mapdata = ""
 		end
 		
 		loadfile(folderpath .. codename)()
