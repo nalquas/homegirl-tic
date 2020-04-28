@@ -46,6 +46,7 @@ homegirl_buttonmap = NIL
 homegirl_buttonmap_last = NIL
 homegirl_spritesheet = NIL
 homegirl_mapdata = NIL
+homegirl_bordercolor = 0
 
 function _init(args)
 	homegirlprint(args)
@@ -129,14 +130,14 @@ function _step(t)
 	if OVR then OVR() end
 	
 	-- Handle clip()
-	rect(0, 0, homegirl_clip_area.x, 180, 0) -- Left
-	rect(homegirl_clip_area.x, 0, homegirl_clip_area.w, homegirl_clip_area.y, 0) -- Top
-	rect(homegirl_clip_area.x+homegirl_clip_area.w, 0, 320-(homegirl_clip_area.x+homegirl_clip_area.w), 180, 0) -- Right
-	rect(homegirl_clip_area.x, homegirl_clip_area.y+homegirl_clip_area.h, homegirl_clip_area.w, 180-(homegirl_clip_area.y+homegirl_clip_area.h), 0) -- Bottom
+	rect(0, 0, homegirl_clip_area.x, 180, homegirl_bordercolor) -- Left
+	rect(homegirl_clip_area.x, 0, homegirl_clip_area.w, homegirl_clip_area.y, homegirl_bordercolor) -- Top
+	rect(homegirl_clip_area.x+homegirl_clip_area.w, 0, 320-(homegirl_clip_area.x+homegirl_clip_area.w), 180, homegirl_bordercolor) -- Right
+	rect(homegirl_clip_area.x, homegirl_clip_area.y+homegirl_clip_area.h, homegirl_clip_area.w, 180-(homegirl_clip_area.y+homegirl_clip_area.h), homegirl_bordercolor) -- Bottom
 	
 	-- Clip the view so that the 240x136 viewport of TIC-80 is enforced
-	rect(0,136,320,44,0) --Bottom black area
-	rect(240,0,240,180,0) --Right black area
+	rect(0,136,320,44,homegirl_bordercolor) --Bottom black area
+	rect(240,0,240,180,homegirl_bordercolor) --Right black area
 	
 	--Compatibility usage notice (to use free space on screen)
 	gfx.fgcolor(15)
@@ -375,15 +376,139 @@ function music(track, frame, row, loop)
 	pass()
 end
 
-function peek(addr)
-	--TODO
-	pass()
-	return 0 --val
+function peek(addr) -- val is a byte
+	-- Addresses taken from https://github.com/nesbox/TIC-80/wiki/RAM
+	if addr < 0x03fc0 then
+		-- SCREEN
+		local val = 0
+		for i=0,1 do
+			local addr4 = (addr*2)+i
+			if i == 0 then
+				val = val + (math.floor(pix(addr4 % 240, math.floor(addr4 / 240))) << 4)
+			else
+				val = val + math.floor(pix(addr4 % 240, math.floor(addr4 / 240)))
+			end
+		end
+		return val
+	elseif addr < 0x03ff0 then
+		-- TODO PALETTE
+	elseif addr < 0x03ff8 then
+		-- TODO PALETTE MAP
+	elseif addr < 0x03ff9 then
+		-- BORDER COLOR
+		return homegirl_bordercolor
+	elseif addr < 0x03ffb then
+		-- TODO SCREEN OFFSET
+	elseif addr < 0x03ffc then
+		-- TODO MOUSE CURSOR
+	elseif addr < 0x04000 then
+		-- UNSPECIFIED RAM
+	elseif addr < 0x06000 then
+		-- TODO BG SPRITES (TILES)
+	elseif addr < 0x08000 then
+		-- TODO FG SPRITES
+	elseif addr < 0x0ff80 then
+		-- MAP
+		local index = addr - 0x8000
+		return mget(index % 240, math.floor(index / 240))
+	elseif addr < 0x0ff84 then
+		-- GAMEPADS
+		return homegirl_buttonmap
+	elseif addr < 0x0ff88 then
+		-- MOUSE
+		local x, y, btn = input.mouse()
+		if addr == 0x0ff84 then
+			-- X
+			return x
+		elseif addr == 0x0ff85 then
+			-- Y
+			return y
+		elseif addr == 0x0ff86 then
+			-- buttons
+			return btn
+		else
+			-- TODO scroll
+		end
+	elseif addr < 0x0ff8c then
+		-- TODO KEYBOARD
+	elseif addr < 0x0ff9c then
+		-- TODO UNSPECIFIED RAM
+	elseif addr < 0x0ffe4 then
+		-- TODO SOUND REGISTERS
+	elseif addr < 0x100e4 then
+		-- TODO WAVEFORMS
+	elseif addr < 0x11164 then
+		-- TODO SFX
+	elseif addr < 0x13e64 then
+		-- TODO MUSIC PATTERNS
+	elseif addr < 0x13ffc then
+		-- TODO MUSIC TRACKS
+	elseif addr < 0x14000 then
+		-- TODO MUSIC POS
+	else
+		-- OUT OF RAM
+	end
+	return 0
 end
 
-function poke(addr, val)
-	--TODO
-	pass()
+function poke(addr, val) -- val is a byte
+	-- Addresses taken from https://github.com/nesbox/TIC-80/wiki/RAM
+	if addr < 0x03fc0 then
+		-- SCREEN
+		for i=0,1 do
+			local addr4 = (addr*2)+i
+			local val4 = val
+			if i == 0 then
+				val4 = (math.floor(val) & 0xf0) >> 4
+			else
+				val4 = math.floor(val) & 0x0f
+			end
+			pix(addr4 % 240, math.floor(addr4 / 240), val4)
+		end
+	elseif addr < 0x03ff0 then
+		-- TODO PALETTE
+	elseif addr < 0x03ff8 then
+		-- TODO PALETTE MAP
+	elseif addr < 0x03ff9 then
+		-- BORDER COLOR
+		homegirl_bordercolor = val
+	elseif addr < 0x03ffb then
+		-- TODO SCREEN OFFSET
+	elseif addr < 0x03ffc then
+		-- TODO MOUSE CURSOR
+	elseif addr < 0x04000 then
+		-- UNSPECIFIED RAM
+	elseif addr < 0x06000 then
+		-- TODO BG SPRITES
+	elseif addr < 0x08000 then
+		-- TODO FG SPRITES
+	elseif addr < 0x0ff80 then
+		-- MAP
+		local index = addr - 0x8000
+		mset(index % 240, math.floor(index / 240), val)
+	elseif addr < 0x0ff84 then
+		-- GAMEPADS
+	elseif addr < 0x0ff88 then
+		-- MOUSE
+	elseif addr < 0x0ff8c then
+		-- KEYBOARD
+	elseif addr < 0x0ff9c then
+		-- TODO UNSPECIFIED RAM
+	elseif addr < 0x0ffe4 then
+		-- TODO SOUND REGISTERS
+	elseif addr < 0x100e4 then
+		-- TODO WAVEFORMS
+	elseif addr < 0x11164 then
+		-- TODO SFX
+	elseif addr < 0x13e64 then
+		-- TODO MUSIC PATTERNS
+	elseif addr < 0x13ffc then
+		-- TODO MUSIC TRACKS
+	elseif addr < 0x14000 then
+		-- TODO MUSIC POS
+	else
+		-- OUT OF RAM
+	end
 end
 
 function peek4(addr4)
