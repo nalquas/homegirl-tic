@@ -313,8 +313,12 @@ function map(x, y, w, h, sx, sy, colorkey, scale, remap)
 end
 
 function mget(x, y)
-	local index = 240 * (y % 136) + (x % 240)
-	return string.byte(homegirl_mapdata, math.tointeger(index + 1)) -- returns id
+	if x >= 0 and y >= 0 and x <= 239 and y <= 135 then
+		local index = 240 * (y % 136) + (x % 240)
+		return string.byte(homegirl_mapdata, math.tointeger(index + 1)) -- returns id
+	else
+		return 0
+	end
 end
 
 function mset(x, y, id)
