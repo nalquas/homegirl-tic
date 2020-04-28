@@ -76,9 +76,9 @@ function _init(args)
 		clip()
 		
 		-- Load file
-		loadfile(args[1] .. "/code.lua")()
 		homegirl_spritesheet = image.load(args[1] .. "/sprites.gif")
 		homegirl_mapdata = fs.read(args[1] .. "/world.map")
+		loadfile(args[1] .. "/code.lua")()
 	else
 		homegirlprint("Invalid usage. Correct usage: tic [folder]")
 		sys.exit(0)
@@ -313,13 +313,17 @@ function map(x, y, w, h, sx, sy, colorkey, scale, remap)
 end
 
 function mget(x, y)
-	local id = 240 * (y % 136) + (x % 240)
-	return string.byte(homegirl_mapdata, math.tointeger(id + 1)) --id
+	local index = 240 * (y % 136) + (x % 240)
+	return string.byte(homegirl_mapdata, math.tointeger(index + 1)) -- returns id
 end
 
 function mset(x, y, id)
-	--TODO
-	pass()
+	if id >= 0 and id <= 255 then -- Check whether id is in range as TIC-80 seems to ignore invalid mset requests
+		local index = 240 * (y % 136) + (x % 240)
+		local pos = math.tointeger(index + 1)
+		homegirl_mapdata = homegirl_mapdata:sub(1, pos-1) .. string.char(id) .. homegirl_mapdata:sub(pos+1)
+	end
+	
 end
 
 function music(track, frame, row, loop)
