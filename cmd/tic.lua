@@ -75,10 +75,37 @@ function _init(args)
 		-- Call some initial methods to setup stuff
 		clip()
 		
-		-- Load file
-		homegirl_spritesheet = image.load(args[1] .. "/sprites.gif")
-		homegirl_mapdata = fs.read(args[1] .. "/world.map")
-		loadfile(args[1] .. "/code.lua")()
+		-- Load files
+		local folderpath = ""
+		local codename = "code.lua"
+		if fs.isdir(args[1]) then
+			-- Path leads to a folder, game likely inside
+			folderpath = args[1] .. "/"
+		else
+			-- Path leads to a file, likely .lua
+			codename = args[1]
+		end
+			
+		-- Try local data first, then look for defaults in user drive if needed
+		if fs.isfile(folderpath .. "sprites.gif") then
+			homegirl_spritesheet = image.load(folderpath .. "sprites.gif")
+		elseif fs.isfile("user:tic_defaults/sprites.gif") then
+			homegirl_spritesheet = image.load("user:tic_defaults/sprites.gif")
+		else
+			homegirlprint("No sprites.gif given, no default sprites.gif in user:tic_defaults. Quitting...")
+			sys.exit(0)
+		end
+		
+		if fs.isfile(folderpath .. "world.map") then
+			homegirl_mapdata = fs.read(folderpath .. "world.map")
+		elseif fs.isfile("user:tic_defaults/world.map") then
+			homegirl_mapdata = fs.read("user:tic_defaults/world.map")
+		else
+			homegirlprint("No world.map given, no default world.map in user:tic_defaults. Quitting...")
+			sys.exit(0)
+		end
+		
+		loadfile(folderpath .. codename)()
 	else
 		homegirlprint("Invalid usage. Correct usage: tic [folder]")
 		sys.exit(0)
