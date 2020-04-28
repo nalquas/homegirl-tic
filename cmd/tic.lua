@@ -264,6 +264,8 @@ function spr(id, x, y, colorkey, scale, flip, rotate, w, h)
 	if colorkey >= 0 and colorkey <= 15 then
 		image.bgcolor(homegirl_spritesheet[1], colorkey)
 		image.copymode(3, true)
+	else
+		image.copymode(3, false)
 	end
 	
 	image.draw(homegirl_spritesheet[1], x, y, (id % 16) * 8, (id // 16) * 8, scale * (w * 8), scale * (h * 8), w * 8, h * 8)
@@ -342,16 +344,10 @@ function map(x, y, w, h, sx, sy, colorkey, scale, remap)
 	colorkey = colorkey or -1
 	scale = scale or 1
 	remap = remap or nil
-	
-	-- Handle transparency (colorkey)
-	if colorkey >= 0 and colorkey <= 15 then
-		image.bgcolor(homegirl_spritesheet[1], colorkey)
-		image.copymode(3, true)
-	end
 
 	for drawy = 0, h do
 		for drawx = 0, w do
-			spr(mget(x + drawx, y + drawy), sx+(drawx * 8), sy+(drawy * 8))
+			spr(mget(x + drawx, y + drawy), sx+(drawx * 8), sy+(drawy * 8), colorkey)
 		end
 	end
 end
@@ -450,9 +446,17 @@ function tri(x1, y1, x2, y2, x3, y3, color)
 end
 
 function textri(x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3, use_map, colorkey)
-	--TODO use_map, colorkey
+	--TODO use_map
 	use_map = use_map or false
 	colorkey = colorkey or -1
+	
+	-- Handle transparency (colorkey)
+	if colorkey >= 0 and colorkey <= 15 then
+		image.bgcolor(homegirl_spritesheet[1], colorkey)
+		image.copymode(3, true)
+	else
+		image.copymode(3, false)
+	end
 	
 	image.tri(homegirl_spritesheet[1], x1, y1, x2, y2, x3, y3, u1, v1, u2, v2, u3, v3)
 end
