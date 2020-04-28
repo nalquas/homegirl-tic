@@ -32,8 +32,8 @@
 
 
 homegirlfont = text.loadfont("Victoria.8b.gif")
-font_big = text.loadfont("tic_big.8b.gif")
-font_small = text.loadfont("ruthenia_c.8.gif")
+font_big = text.loadfont("tic_big.8b.gif") or text.loadfont("ruthenia_c.8.gif") or homegirlfont
+font_small = text.loadfont("ruthenia_c.8.gif") or homegirlfont
 
 homegirlprint = print --Rename homegirl's print in order to not interfere with TIC-80's print
 homegirltime = 0
