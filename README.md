@@ -20,11 +20,13 @@ To play a game made for TIC-80 in Homegirl using this tool, you'll have to follo
 2. Open TIC-80 and load the game you want to extract data from.
 3. In TIC-80, use `export map` and `export sprites` to export the spritesheet and map. Store the files in the folder you created.
 4. In TIC-80, press `ESC` to open the code viewer. Use `CTRL+A` to select everything, then copy the code into the folder you created.
+5. In TIC-80, go to the sprite editor. Click on the button used to change palette settings. Then, press the copy button and paste the palette string into the folder you created.
 
 The file structure should be as follows (Make sure the filenames are identical):
 ```
 your_game_folder
 |- code.lua
+|- palette.data
 |- sprites.gif
 |- world.map
 ```
