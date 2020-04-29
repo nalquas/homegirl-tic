@@ -259,6 +259,24 @@ function spr(id, x, y, colorkey, scale, flip, rotate, w, h)
 	w = w or 1
 	h = h or 1
 	
+	local flip_x = 0
+	local flip_y = 0
+	local scale_x_multiplier = 1
+	local scale_y_multiplier = 1
+	
+	if flip == 1 then
+		flip_x = 1
+		scale_x_multiplier = -1
+	elseif flip == 2 then
+		flip_y = 1
+		scale_y_multiplier = -1
+	elseif flip == 3 then
+		flip_x = 1
+		flip_y = 1
+		scale_x_multiplier = -1
+		scale_y_multiplier = -1
+	end
+	
 	if type(id) ~= "number" then id = 0 end
 	
 	-- Handle transparency (colorkey)
@@ -269,7 +287,7 @@ function spr(id, x, y, colorkey, scale, flip, rotate, w, h)
 		image.copymode(3, false)
 	end
 	
-	image.draw(homegirl_spritesheet[1], x, y, (id % 16) * 8, (id // 16) * 8, scale * (w * 8), scale * (h * 8), w * 8, h * 8)
+	image.draw(homegirl_spritesheet[1], x + (flip_x * scale * (w * 8)), y + (flip_y * scale * (h * 8)), (id % 16) * 8, (id // 16) * 8, scale_x_multiplier * scale * (w * 8), scale_y_multiplier * scale * (h * 8), w * 8, h * 8)
 end
 
 function btn(id)
