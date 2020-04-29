@@ -226,9 +226,9 @@ end
 function circ(x, y, radius, color)
 	-- Use triangles to approximate a circle
 	gfx.fgcolor(color)
-	local x_now = x+radius*math.cos(math.rad(358))
-	local y_now = y+radius*math.sin(math.rad(358))
-	for i=0,358,2 do --Only check every second degree to improve performance
+	local x_now = x+radius*math.cos(math.rad(350))
+	local y_now = y+radius*math.sin(math.rad(350))
+	for i=0,350,10 do --Only check every tenth degree to improve performance
 		x_last = x_now
 		y_last = y_now
 		x_now = x+radius*math.cos(math.rad(i))
@@ -241,7 +241,7 @@ function circb(x, y, radius, color)
 	gfx.fgcolor(color)
 	local x_last = x
 	local y_last = y
-	for i=0,360,2 do --Only check every second degree to improve performance
+	for i=0,360,10 do --Only check every tenth degree to improve performance
 		x_now = x+radius*math.cos(math.rad(i))
 		y_now = y+radius*math.sin(math.rad(i))
 		if i>0 then gfx.line(x_last,y_last,x_now,y_now) end
