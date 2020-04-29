@@ -391,7 +391,17 @@ function peek(addr) -- val is a byte
 		end
 		return val
 	elseif addr < 0x03ff0 then
-		-- TODO PALETTE
+		-- PALETTE
+		local id = math.floor((addr - 0x03fc0) / 3)
+		local subid = math.floor((addr - 0x03fc0) % 3)
+		local r, g, b = gfx.palette(id)
+		if subid == 0 then
+			return r * 16
+		elseif subid == 1 then
+			return g * 16
+		else
+			return b * 16
+		end
 	elseif addr < 0x03ff8 then
 		-- TODO PALETTE MAP
 	elseif addr < 0x03ff9 then
@@ -466,7 +476,18 @@ function poke(addr, val) -- val is a byte
 			pix(addr4 % 240, math.floor(addr4 / 240), val4)
 		end
 	elseif addr < 0x03ff0 then
-		-- TODO PALETTE
+		-- PALETTE
+		local id = math.floor((addr - 0x03fc0) / 3)
+		local subid = math.floor((addr - 0x03fc0) % 3)
+		local r, g, b = gfx.palette(id)
+		if subid == 0 then
+			r = val / 16
+		elseif subid == 1 then
+			g = val / 16
+		else
+			b = val / 16
+		end
+		gfx.palette(id, r, g, b)
 	elseif addr < 0x03ff8 then
 		-- TODO PALETTE MAP
 	elseif addr < 0x03ff9 then
