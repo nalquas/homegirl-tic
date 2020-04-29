@@ -114,7 +114,7 @@ function overwriteGfxPaletteFromString(pal)
 end
 
 function overwriteGfxPaletteAuto(id, r, g, b)
-	gfx.palette(id, r/16, g/16, b/16)
+	gfx.palette(id, r/17, g/17, b/17)
 end
 
 function _step(t)
@@ -396,11 +396,11 @@ function peek(addr) -- val is a byte
 		local subid = math.floor((addr - 0x03fc0) % 3)
 		local r, g, b = gfx.palette(id)
 		if subid == 0 then
-			return r * 16
+			return r * 17
 		elseif subid == 1 then
-			return g * 16
+			return g * 17
 		else
-			return b * 16
+			return b * 17
 		end
 	elseif addr < 0x03ff8 then
 		-- TODO PALETTE MAP
@@ -481,11 +481,11 @@ function poke(addr, val) -- val is a byte
 		local subid = math.floor((addr - 0x03fc0) % 3)
 		local r, g, b = gfx.palette(id)
 		if subid == 0 then
-			r = val / 16
+			r = val / 17
 		elseif subid == 1 then
-			g = val / 16
+			g = val / 17
 		else
-			b = val / 16
+			b = val / 17
 		end
 		gfx.palette(id, r, g, b)
 	elseif addr < 0x03ff8 then
