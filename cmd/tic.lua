@@ -55,23 +55,8 @@ function _init(args)
 		sys.stepinterval(1000/60) --60fps
 		scrn = view.newscreen(10, 4) --320x180, the closest resolution to TIC-80's 240x136
 		
-		--Load TIC-80 palette (DB16)
-		overwriteGfxPaletteAuto(0, 0x14, 0x0c, 0x1c) --black
-		overwriteGfxPaletteAuto(1, 0x44, 0x24, 0x34) --dark red
-		overwriteGfxPaletteAuto(2, 0x30, 0x34, 0x6d) --dark blue
-		overwriteGfxPaletteAuto(3, 0x4e, 0x4a, 0x4f) --dark gray
-		overwriteGfxPaletteAuto(4, 0x85, 0x4c, 0x30) --brown
-		overwriteGfxPaletteAuto(5, 0x34, 0x65, 0x24) --dark green
-		overwriteGfxPaletteAuto(6, 0xd0, 0x46, 0x48) --red
-		overwriteGfxPaletteAuto(7, 0x75, 0x71, 0x61) --light gray
-		overwriteGfxPaletteAuto(8, 0x59, 0x7d, 0xce) --light blue
-		overwriteGfxPaletteAuto(9, 0xd2, 0x7d, 0x2c) --orange
-		overwriteGfxPaletteAuto(10, 0x85, 0x95, 0xa1) --blue/gray
-		overwriteGfxPaletteAuto(11, 0x6d, 0xaa, 0x2c) --light green
-		overwriteGfxPaletteAuto(12, 0xd2, 0xaa, 0x99) --peach
-		overwriteGfxPaletteAuto(13, 0x6d, 0xc2, 0xca) --cyan
-		overwriteGfxPaletteAuto(14, 0xda, 0xd4, 0x5e) --yellow
-		overwriteGfxPaletteAuto(15, 0xde, 0xee, 0xd6) --white
+		--Load TIC-80 default palette (DB16)
+		overwriteGfxPaletteFromString("140c1c44243430346d4e4a4e854c30346524d04648757161597dced27d2c8595a16daa2cd2aa996dc2cadad45edeeed6")
 		
 		-- Call some initial methods to setup stuff
 		clip()
@@ -85,6 +70,10 @@ function _init(args)
 		else
 			-- Path leads to a file, likely .lua
 			codename = args[1]
+		end
+		
+		if fs.isfile(folderpath .. "palette.data") then
+			overwriteGfxPaletteFromString(fs.read(folderpath .. "palette.data"))
 		end
 			
 		-- Try local data first, then look for defaults in user drive if needed
@@ -110,6 +99,17 @@ function _init(args)
 	else
 		homegirlprint("Invalid usage. Correct usage: tic [folder]")
 		sys.exit(0)
+	end
+end
+
+function overwriteGfxPaletteFromString(pal)
+	for id = 0,15 do
+		local index = id * 6
+		local color = pal:sub(index+1, index+6)
+		local r = tonumber(color:sub(1,2), 16)
+		local g = tonumber(color:sub(3,4), 16)
+		local b = tonumber(color:sub(5,6), 16)
+		overwriteGfxPaletteAuto(id, r, g, b)
 	end
 end
 
