@@ -48,9 +48,19 @@ homegirl_spritesheet = NIL
 homegirl_mapdata = NIL
 homegirl_bordercolor = 0
 
+-- This is an important one! Enabling this will ignore all TIC-80 limits, thus enabling easy porting of games to Homegirl!
+-- It can be done by a launch parameter, see _init()
+homegirl_ignorelimits = false
+
 function _init(args)
 	homegirlprint(args)
-	if #args==1 then
+	if #args>=1 and #args<=2 then
+		if #args==2 then
+			if args[2] == "ignorelimits" then
+				homegirl_ignorelimits = true
+			end
+		end
+		
 		--Initialize screen
 		sys.stepinterval(1000/60) --60fps
 		scrn = view.newscreen(10, 4) --320x180, the closest resolution to TIC-80's 240x136
@@ -97,7 +107,7 @@ function _init(args)
 		
 		loadfile(folderpath .. codename)()
 	else
-		homegirlprint("Invalid usage. Correct usage: tic [folder]")
+		homegirlprint("Invalid usage.\n\nCorrect usage: tic [path/to/folder]\nAlternative:   tic [path/to/script.lua]")
 		sys.exit(0)
 	end
 end
@@ -136,12 +146,16 @@ function _step(t)
 	rect(homegirl_clip_area.x, homegirl_clip_area.y+homegirl_clip_area.h, homegirl_clip_area.w, 180-(homegirl_clip_area.y+homegirl_clip_area.h), homegirl_bordercolor) -- Bottom
 	
 	-- Clip the view so that the 240x136 viewport of TIC-80 is enforced
-	rect(0,136,320,44,homegirl_bordercolor) --Bottom black area
-	rect(240,0,240,180,homegirl_bordercolor) --Right black area
+	if not homegirl_ignorelimits then
+		rect(0,136,320,44,homegirl_bordercolor) --Bottom black area
+		rect(240,0,240,180,homegirl_bordercolor) --Right black area
+	end
 	
 	--Compatibility usage notice (to use free space on screen)
-	gfx.fgcolor(15)
-	text.draw("Nalquas' TIC-80 compatibility layer\nCurrent FPS: " .. homegirlfps .. "\nSteptime: " .. (t-homegirl_lastStep) .. "ms",homegirlfont,2,150)
+	if not homegirl_ignorelimits then
+		gfx.fgcolor(15)
+		text.draw("Nalquas' TIC-80 compatibility layer\nCurrent FPS: " .. homegirlfps .. "\nSteptime: " .. (t-homegirl_lastStep) .. "ms",homegirlfont,2,150)
+	end
 	
 	--Check if we have to exit
 	if input.hotkey() == "\x1b" then
@@ -185,7 +199,11 @@ end
 
 function clip(x, y, w, h)
 	if x==NIL or y==NIL or w==NIL or h==NIL then
-		homegirl_clip_area = {x=0, y=0, w=240, h=136}
+		if not homegirl_ignorelimits then
+			homegirl_clip_area = {x=0, y=0, w=240, h=136}
+		else
+			homegirl_clip_area = {x=0, y=0, w=320, h=180}
+		end
 	else
 		homegirl_clip_area = {x=x, y=y, w=w, h=h}
 	end
@@ -251,7 +269,7 @@ function circb(x, y, radius, color)
 end
 
 function spr(id, x, y, colorkey, scale, flip, rotate, w, h)
-	--TODO flip and rotate
+	--TODO rotate
 	colorkey = colorkey or -1
 	scale = scale or 1
 	flip = flip or 0
