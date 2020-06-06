@@ -1,5 +1,5 @@
 # homegirl-tic
-This is a [TIC-80](https://github.com/nesbox/TIC-80) compatiblity layer made for the [Homegirl Fantasy Console](https://github.com/poeticAndroid/homegirl).
+This is a [TIC-80](https://github.com/nesbox/TIC-80) compatibility layer made for the [Homegirl Fantasy Console](https://github.com/poeticAndroid/homegirl).
 
 ## A word of warning
 This is still missing several important functions, but some very basic games should run already.
@@ -11,8 +11,8 @@ Right now, you cannot load .tic files directly. This means you will have to manu
 - Copy the contents of `tic_defaults` into `user:tic_defaults`
 
 ## Usage
-- `tic [folder]` - Launch a game using TIC-80 compatiblity mode
-- `tic [script]` - Launch a .lua using TIC-80 compatiblity mode
+- `tic [folder]` - Launch a game using TIC-80 compatibility mode
+- `tic [script]` - Launch a .lua using TIC-80 compatibility mode
 
 ## Extracting .tic data for use in Homegirl
 To play a game made for TIC-80 in Homegirl using this tool, you'll have to follow the following steps:
