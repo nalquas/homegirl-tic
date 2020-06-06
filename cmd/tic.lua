@@ -44,7 +44,7 @@ homegirlfps = 0
 homegirl_clip_area = NIL
 homegirl_buttonmap = NIL
 homegirl_buttonmap_last = NIL
-homegirl_spritesheet = NIL
+homegirl_spritesheet = {}
 homegirl_mapdata = NIL
 homegirl_bordercolor = 0
 
@@ -93,7 +93,7 @@ function _init(args)
 			homegirl_spritesheet = image.load("user:tic_defaults/sprites.gif")
 		else
 			homegirlprint("No sprites.gif given, no default sprites.gif in user:tic_defaults. Generating empty spritesheet instead...")
-			homegirl_spritesheet = image.new(128, 256, 8)
+			homegirl_spritesheet[1] = image.new(128, 256, 8)
 		end
 		
 		if fs.isfile(folderpath .. "world.map") then
